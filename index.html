@@ -25,6 +25,7 @@
             text-align: center;
             margin-bottom: 30px;
             color: #555;
+            font-size: 18px;
         }
 
         .wrapper {
@@ -46,6 +47,7 @@
         h2 {
             text-align: center;
             margin-top: 0;
+            font-size: 30px;
         }
 
         .country-row {
@@ -57,12 +59,16 @@
 
         .country-name {
             width: 190px;
+            min-height: 56px;
             padding: 16px;
             background: #dbeafe;
             border: 1px solid #333;
             border-radius: 8px;
             font-weight: bold;
             text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .drop-zone {
@@ -83,6 +89,8 @@
         }
 
         .city {
+            width: 100%;
+            min-height: 56px;
             padding: 16px;
             margin-bottom: 12px;
             background: white;
@@ -92,6 +100,13 @@
             font-weight: bold;
             cursor: grab;
             user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .city:active {
+            cursor: grabbing;
         }
 
         .city.dragging {
@@ -100,20 +115,29 @@
             pointer-events: none;
             opacity: 0.95;
             cursor: grabbing;
+            width: 220px !important;
+            height: 56px !important;
+            min-height: 56px !important;
+            margin-bottom: 0 !important;
+            background: white;
+            border: 1px solid #333;
+            color: black;
         }
 
-        .correct {
+        .drop-zone.correct {
             background: #16a34a;
             border-color: #166534;
         }
 
-        .wrong {
+        .drop-zone.wrong {
             background: #dc2626;
             border-color: #991b1b;
         }
 
-        .correct .city,
-        .wrong .city {
+        .drop-zone.correct .city,
+        .drop-zone.wrong .city {
+            width: 100%;
+            min-height: 40px;
             margin-bottom: 0;
             color: white;
             background: transparent;
@@ -134,6 +158,18 @@
 
         .reset-button:hover {
             background: #374151;
+        }
+
+        @media (max-width: 1000px) {
+            .wrapper {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .countries,
+            .cities {
+                width: 95%;
+            }
         }
     </style>
 </head>
@@ -274,7 +310,24 @@
         document.getElementById("cities-container").appendChild(cityElement);
     }
 
+    function checkAnswer(dropZone, cityElement) {
+        const correctAnswer = dropZone.getAttribute("data-answer");
+        const selectedCity = cityElement.textContent.trim();
+
+        if (correctAnswer === selectedCity) {
+            dropZone.classList.add("correct");
+            dropZone.setAttribute("data-status", "correct");
+        } else {
+            dropZone.classList.add("wrong");
+            dropZone.setAttribute("data-status", "wrong");
+        }
+    }
+
     function startDragging(city, event) {
+        if (event.button !== undefined && event.button !== 0) return;
+
+        event.preventDefault();
+
         draggedElement = city;
         sourceDropZone = city.closest(".drop-zone");
 
@@ -283,10 +336,11 @@
         offsetX = event.clientX - rect.left;
         offsetY = event.clientY - rect.top;
 
-        city.style.width = rect.width + "px";
-        city.style.height = rect.height + "px";
+        city.style.width = "220px";
+        city.style.height = "56px";
         city.style.left = rect.left + "px";
         city.style.top = rect.top + "px";
+
         city.classList.add("dragging");
 
         document.body.appendChild(city);
@@ -297,19 +351,19 @@
     }
 
     document.querySelectorAll(".city").forEach(function(city) {
-        city.addEventListener("mousedown", function(event) {
+        city.addEventListener("pointerdown", function(event) {
             startDragging(city, event);
         });
     });
 
-    document.addEventListener("mousemove", function(event) {
+    document.addEventListener("pointermove", function(event) {
         if (!draggedElement) return;
 
         draggedElement.style.left = (event.clientX - offsetX) + "px";
         draggedElement.style.top = (event.clientY - offsetY) + "px";
     });
 
-    document.addEventListener("mouseup", function(event) {
+    document.addEventListener("pointerup", function(event) {
         if (!draggedElement) return;
 
         const dropTarget = document.elementFromPoint(event.clientX, event.clientY);
@@ -326,16 +380,7 @@
             resetCityStyle(draggedElement);
             dropZone.appendChild(draggedElement);
 
-            const correctAnswer = dropZone.getAttribute("data-answer");
-            const selectedCity = draggedElement.textContent.trim();
-
-            if (correctAnswer === selectedCity) {
-                dropZone.classList.add("correct");
-                dropZone.setAttribute("data-status", "correct");
-            } else {
-                dropZone.classList.add("wrong");
-                dropZone.setAttribute("data-status", "wrong");
-            }
+            checkAnswer(dropZone, draggedElement);
         } else {
             returnCityToList(draggedElement);
         }
