@@ -1,252 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>City Matching Drag Drop</title>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
-            margin: 0;
-            padding: 30px;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #555;
-        }
-
-        .wrapper {
-            display: flex;
-            justify-content: center;
-            gap: 60px;
-            align-items: flex-start;
-        }
-
-        .countries,
-        .cities {
-            width: 420px;
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.12);
-        }
-
-        h2 {
-            text-align: center;
-            margin-top: 0;
-        }
-
-        .country-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-            gap: 10px;
-        }
-
-        .country-name {
-            width: 160px;
-            padding: 14px;
-            background: #dbeafe;
-            border: 1px solid #333;
-            border-radius: 8px;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .drop-zone {
-            width: 190px;
-            min-height: 48px;
-            padding: 8px;
-            background: #e5e7eb;
-            border: 2px dashed #777;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .placeholder {
-            color: #777;
-            font-size: 13px;
-        }
-
-        .city {
-            padding: 14px;
-            margin-bottom: 12px;
-            background: white;
-            border: 1px solid #333;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: bold;
-            cursor: grab;
-            user-select: none;
-        }
-
-        .city.dragging {
-            position: fixed;
-            z-index: 9999;
-            pointer-events: none;
-            opacity: 0.9;
-            cursor: grabbing;
-            width: 150px;
-        }
-
-        .correct {
-            background: #16a34a;
-            border-color: #166534;
-        }
-
-        .wrong {
-            background: #dc2626;
-            border-color: #991b1b;
-        }
-
-        .correct .city,
-        .wrong .city {
-            margin-bottom: 0;
-            color: white;
-            background: transparent;
-            border: none;
-        }
-
-        .reset-button {
-            display: block;
-            margin: 25px auto 0;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            background: #111827;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .reset-button:hover {
-            background: #374151;
-        }
-    </style>
-</head>
-
-<body>
-
-<h1 id="page-title">City Matching Drag Drop</h1>
-<p class="subtitle">Drag each city to the correct country.</p>
-
-<div class="wrapper">
-
-    <div class="countries" id="countries-container">
-        <h2>Countries</h2>
-
-        <div class="country-row">
-            <div class="country-name">Greece</div>
-            <div class="drop-zone" id="country-greece" data-answer="Athens">
-                <span class="placeholder">Drop city here</span>
-            </div>
-        </div>
-
-        <div class="country-row">
-            <div class="country-name">Germany</div>
-            <div class="drop-zone" id="country-germany" data-answer="Berlin">
-                <span class="placeholder">Drop city here</span>
-            </div>
-        </div>
-
-        <div class="country-row">
-            <div class="country-name">Sweden</div>
-            <div class="drop-zone" id="country-sweden" data-answer="Stockholm">
-                <span class="placeholder">Drop city here</span>
-            </div>
-        </div>
-
-        <div class="country-row">
-            <div class="country-name">Türkiye</div>
-            <div class="drop-zone" id="country-turkiye" data-answer="Ankara">
-                <span class="placeholder">Drop city here</span>
-            </div>
-        </div>
-
-        <div class="country-row">
-            <div class="country-name">France</div>
-            <div class="drop-zone" id="country-france" data-answer="Paris">
-                <span class="placeholder">Drop city here</span>
-            </div>
-        </div>
-
-        <div class="country-row">
-            <div class="country-name">Italy</div>
-            <div class="drop-zone" id="country-italy" data-answer="Rome">
-                <span class="placeholder">Drop city here</span>
-            </div>
-        </div>
-
-        <div class="country-row">
-            <div class="country-name">Austria</div>
-            <div class="drop-zone" id="country-austria" data-answer="Vienna">
-                <span class="placeholder">Drop city here</span>
-            </div>
-        </div>
-
-        <div class="country-row">
-            <div class="country-name">Netherlands</div>
-            <div class="drop-zone" id="country-netherlands" data-answer="Amsterdam">
-                <span class="placeholder">Drop city here</span>
-            </div>
-        </div>
-
-        <div class="country-row">
-            <div class="country-name">Spain</div>
-            <div class="drop-zone" id="country-spain" data-answer="Madrid">
-                <span class="placeholder">Drop city here</span>
-            </div>
-        </div>
-
-        <div class="country-row">
-            <div class="country-name">United Kingdom</div>
-            <div class="drop-zone" id="country-united-kingdom" data-answer="London">
-                <span class="placeholder">Drop city here</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="cities" id="cities-container">
-        <h2>Cities</h2>
-
-        <div class="city" id="city-vienna">Vienna</div>
-        <div class="city" id="city-berlin">Berlin</div>
-        <div class="city" id="city-athens">Athens</div>
-        <div class="city" id="city-london">London</div>
-        <div class="city" id="city-madrid">Madrid</div>
-        <div class="city" id="city-amsterdam">Amsterdam</div>
-        <div class="city" id="city-ankara">Ankara</div>
-        <div class="city" id="city-paris">Paris</div>
-        <div class="city" id="city-stockholm">Stockholm</div>
-        <div class="city" id="city-rome">Rome</div>
-    </div>
-
-</div>
-
-<button class="reset-button" id="reset-button" onclick="location.reload()">Reset Page</button>
-
 <script>
     let draggedElement = null;
+    let sourceDropZone = null;
     let offsetX = 0;
     let offsetY = 0;
+
+    function addPlaceholder(dropZone) {
+        dropZone.innerHTML = '<span class="placeholder">Drop city here</span>';
+    }
 
     function resetDropZone(dropZone) {
         dropZone.classList.remove("correct", "wrong");
         dropZone.removeAttribute("data-status");
-
-        if (dropZone.children.length === 0) {
-            dropZone.innerHTML = '<span class="placeholder">Drop city here</span>';
-        }
+        addPlaceholder(dropZone);
     }
 
     function clearDropZone(dropZone) {
@@ -255,36 +20,50 @@
         dropZone.innerHTML = "";
     }
 
-    function returnCityToList(cityElement) {
-        const citiesContainer = document.getElementById("cities-container");
-        citiesContainer.appendChild(cityElement);
-
+    function resetCityStyle(cityElement) {
+        cityElement.classList.remove("dragging");
         cityElement.style.left = "";
         cityElement.style.top = "";
         cityElement.style.position = "";
         cityElement.style.width = "";
+        cityElement.style.height = "";
+    }
+
+    function returnCityToList(cityElement) {
+        const citiesContainer = document.getElementById("cities-container");
+        resetCityStyle(cityElement);
+        citiesContainer.appendChild(cityElement);
+    }
+
+    function activateDragging(city, event) {
+        draggedElement = city;
+        sourceDropZone = city.closest(".drop-zone");
+
+        // ÖNEMLİ: Koordinatı element DOM'dayken alıyoruz.
+        const rect = city.getBoundingClientRect();
+
+        offsetX = event.clientX - rect.left;
+        offsetY = event.clientY - rect.top;
+
+        city.style.width = rect.width + "px";
+        city.style.height = rect.height + "px";
+        city.style.left = rect.left + "px";
+        city.style.top = rect.top + "px";
+
+        city.classList.add("dragging");
+
+        // appendChild elementi eski yerinden otomatik taşır.
+        document.body.appendChild(city);
+
+        // Eski drop-zone'u temizle.
+        if (sourceDropZone) {
+            resetDropZone(sourceDropZone);
+        }
     }
 
     document.querySelectorAll(".city").forEach(city => {
         city.addEventListener("mousedown", function (event) {
-            draggedElement = city;
-
-            const oldParent = city.parentElement;
-
-            if (oldParent.classList.contains("drop-zone")) {
-                oldParent.removeChild(city);
-                resetDropZone(oldParent);
-            }
-
-            const rect = city.getBoundingClientRect();
-            offsetX = event.clientX - rect.left;
-            offsetY = event.clientY - rect.top;
-
-            city.classList.add("dragging");
-            city.style.left = rect.left + "px";
-            city.style.top = rect.top + "px";
-
-            document.body.appendChild(city);
+            activateDragging(city, event);
         });
     });
 
@@ -298,8 +77,6 @@
     document.addEventListener("mouseup", function (event) {
         if (!draggedElement) return;
 
-        draggedElement.classList.remove("dragging");
-
         const dropTarget = document.elementFromPoint(event.clientX, event.clientY);
         const dropZone = dropTarget ? dropTarget.closest(".drop-zone") : null;
 
@@ -311,6 +88,7 @@
             }
 
             clearDropZone(dropZone);
+            resetCityStyle(draggedElement);
             dropZone.appendChild(draggedElement);
 
             const correctAnswer = dropZone.getAttribute("data-answer");
@@ -323,18 +101,11 @@
                 dropZone.classList.add("wrong");
                 dropZone.setAttribute("data-status", "wrong");
             }
-
-            draggedElement.style.left = "";
-            draggedElement.style.top = "";
-            draggedElement.style.position = "";
-            draggedElement.style.width = "";
         } else {
             returnCityToList(draggedElement);
         }
 
         draggedElement = null;
+        sourceDropZone = null;
     });
 </script>
-
-</body>
-</html>
